@@ -1,7 +1,8 @@
 const request = Symbol('request');
 
 class WxHttp {
-  constructor() {
+  constructor(config) {
+    this.config = config;
     if(!Promise.prototype.always) {
       Promise.prototype.always = function (callback) {
         return this.then(function (d) {
@@ -14,13 +15,12 @@ class WxHttp {
   }
   //内部方法，发http请求
   [request](method, url, params) {
+    console.log(this.config)
     const promise = new Promise((resolve, reject) => {
       wx.request({
         method: method || 'get',
-        url: 'https://babytest.zjtech.cc/api/' + url,
-        header: {
-          token: params.token || this.vm.token
-        },
+        url: this.config.api + url,
+        header: this.config.header,
         data: params,
         success: (res) => {
           resolve(res.data);
@@ -44,6 +44,7 @@ class WxHttp {
       return this[request]('post', url, params);
     },
   }
+  config = {}
 }
 
 export default WxHttp;
